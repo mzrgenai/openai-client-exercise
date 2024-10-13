@@ -12,20 +12,30 @@ $client = OpenAI::client($apiKey);
 use OpenAI;
 
 
-$stream = $client->completions()->createStreamed([
-    'model' => 'gpt-3.5-turbo-instruct',
-    'prompt' => 'Hi',
-    'max_tokens' => 10,
+$response = $client->chat()->create([
+    'model' => 'gpt-3.5-turbo',
+    'messages' => [
+        ['role' => 'user', 'content' => 'Hello!'],
+    ],
 ]);
 
-foreach($stream as $response){
-    echo $response->choices[0]->text;
+$response->id; // 'chatcmpl-6pMyfj1HF4QXnfvjtfzvufZSQq6Eq'
+$response->object; // 'chat.completion'
+$response->created; // 1677701073
+$response->model; // 'gpt-3.5-turbo-0301'
+
+foreach ($response->choices as $result) {
+    $result->index; // 0
+    $result->message->role; // 'assistant'
+    $result->message->content; // '\n\nHello there! How can I assist you today?'
+    $result->finishReason; // 'stop'
 }
-// 1. iteration => 'I'
-// 2. iteration => ' am'
-// 3. iteration => ' very'
-// 4. iteration => ' excited'
-// ...
+
+$response->usage->promptTokens; // 9,
+$response->usage->completionTokens; // 12,
+$response->usage->totalTokens; // 21
+
+print_r($response->toArray()); // ['id' => 'chatcmpl-6pMyfj1HF4QXnfvjtfzvufZSQq6Eq', ...]
 
 
 
