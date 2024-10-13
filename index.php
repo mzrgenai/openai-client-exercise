@@ -12,20 +12,18 @@ $client = OpenAI::client($apiKey);
 use OpenAI;
 
 
-// $api = 'http://127.0.0.1:11434';
+$response = $client->models()->list();
 
-// $yourApiKey = getenv('YOUR_API_KEY');
-$client = OpenAI::client($apiKey);
+$response->object; // 'list'
 
-$result = $client->chat()->create([
-    'model' => 'gpt-4',
-    'messages' => [
-        ['role' => 'user', 'content' => 'Hello!'],
-    ],
-]);
+foreach ($response->data as $result) {
+    $result->id; // 'gpt-3.5-turbo-instruct'
+    $result->object; // 'model'
+    // ...
+}
 
-// Hello! How can I assist you today?
-echo $result->choices[0]->message->content; 
+print_r($response->toArray()); // ['object' => 'list', 'data' => [...]]
+
 
 
 
