@@ -11,50 +11,44 @@ $client = OpenAI::client($apiKey);
 
 use OpenAI;
 
-$response = $client->chat()->create([
-    'model' => 'gpt-3.5-turbo-0613',
+$result = $client->chat()->create([
+    'model' => 'gpt-4',
     'messages' => [
-        ['role' => 'user', 'content' => 'What\'s the weather like in Boston?'],
+        ['role' => 'user', 'content' => 'What\'s the weather like in New York?'],
     ],
     'tools' => [
         [
             'type' => 'function',
             'function' => [
-                'name' => 'get_current_weather',
+                'name' => 'get_weather',
                 'description' => 'Get the current weather in a given location',
                 'parameters' => [
                     'type' => 'object',
                     'properties' => [
                         'location' => [
                             'type' => 'string',
-                            'description' => 'The city and state, e.g. San Francisco, CA',
-                        ],
-                        'unit' => [
-                            'type' => 'string',
-                            'enum' => ['celsius', 'fahrenheit']
+                            'description' => 'The city and state, e.g. New York, NY',
                         ],
                     ],
                     'required' => ['location'],
                 ],
             ],
-        ]
-    ]
+        ],
+    ],
 ]);
 
-$response->id; // 'chatcmpl-6pMyfj1HF4QXnfvjtfzvufZSQq6Eq'
-$response->object; // 'chat.completion'
-$response->created; // 1677701073
-$response->model; // 'gpt-3.5-turbo-0613'
-
+$response = $result;
+// Process the result and handle the tool call
 foreach ($response->choices as $result) {
-    $result->index; // 0
-    $result->message->role; // 'assistant'
-    $result->message->content; // null
-    $result->message->toolCalls[0]->id; // 'call_123'
-    $result->message->toolCalls[0]->type; // 'function'
-    $result->message->toolCalls[0]->function->name; // 'get_current_weather'
-    $result->message->toolCalls[0]->function->arguments; // "{\n  \"location\": \"Boston, MA\"\n}"
-    $result->finishReason; // 'tool_calls'
+   echo $result->index; // 0
+   echo $result->message->role; // 'assistant'
+   echo $result->message->content; // null
+   echo $result->message->toolCalls[0]->id; // 'call_123'
+   echo $result->message->toolCalls[0]->type; // 'function'
+   echo $result->message->toolCalls[0]->function->name; // 'get_current_weather'
+   echo $result->message->toolCalls[0]->function->arguments; // "{\n  \"location\": \"Boston, MA\"\n}"
+   echo $result->finishReason; // 'tool_calls'
+   echo "<hr />";
 }
 
 $response->usage->promptTokens; // 82,
