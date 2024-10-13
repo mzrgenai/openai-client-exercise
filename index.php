@@ -24,7 +24,8 @@ $result = $client->chat()->create([
     ],
 ]);
 
-echo $result->choices[0]->message->content; // Hello! How can I assist you today?
+// Hello! How can I assist you today?
+echo $result->choices[0]->message->content; 
 
 
 
