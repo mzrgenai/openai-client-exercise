@@ -12,17 +12,20 @@ $client = OpenAI::client($apiKey);
 use OpenAI;
 
 
-$response = $client->models()->list();
+$stream = $client->completions()->createStreamed([
+    'model' => 'gpt-3.5-turbo-instruct',
+    'prompt' => 'Hi',
+    'max_tokens' => 10,
+]);
 
-$response->object; // 'list'
-
-foreach ($response->data as $result) {
-    $result->id; // 'gpt-3.5-turbo-instruct'
-    $result->object; // 'model'
-    // ...
+foreach($stream as $response){
+    echo $response->choices[0]->text;
 }
-
-print_r($response->toArray()); // ['object' => 'list', 'data' => [...]]
+// 1. iteration => 'I'
+// 2. iteration => ' am'
+// 3. iteration => ' very'
+// 4. iteration => ' excited'
+// ...
 
 
 
