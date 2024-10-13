@@ -14,28 +14,39 @@ use OpenAI;
 $result = $client->chat()->create([
     'model' => 'gpt-4',
     'messages' => [
-        ['role' => 'user', 'content' => 'What\'s the weather like in New York?'],
+        ['role' => 'user', 'content' => 'Convert 100 USD to EUR'],
     ],
     'tools' => [
         [
             'type' => 'function',
             'function' => [
-                'name' => 'get_weather',
-                'description' => 'Get the current weather in a given location',
+                'name' => 'convert_currency',
+                'description' => 'Convert an amount from one currency to another',
                 'parameters' => [
                     'type' => 'object',
                     'properties' => [
-                        'location' => [
+                        'amount' => [
+                            'type' => 'number',
+                            'description' => 'The amount to convert',
+                        ],
+                        'from_currency' => [
                             'type' => 'string',
-                            'description' => 'The city and state, e.g. New York, NY',
+                            'description' => 'The currency to convert from',
+                        ],
+                        'to_currency' => [
+                            'type' => 'string',
+                            'description' => 'The currency to convert to',
                         ],
                     ],
-                    'required' => ['location'],
+                    'required' => ['amount', 'from_currency', 'to_currency'],
                 ],
             ],
         ],
     ],
 ]);
+
+// Process the result and handle the tool call
+
 
 $response = $result;
 // Process the result and handle the tool call
