@@ -11,55 +11,45 @@ $client = OpenAI::client($apiKey);
 
 use OpenAI;
 
-$result = $client->chat()->create([
-    'model' => 'gpt-4',
+$response = $client->chat()->create([
+    'model' => 'gpt-3.5-turbo-0613',
     'messages' => [
-        ['role' => 'user', 'content' => 'Convert 100 USD to EUR'],
+        ['role' => 'user', 'content' => 'What\'s the weather like in Boston?'],
     ],
-    'tools' => [
+    'functions' => [
         [
-            'type' => 'function',
-            'function' => [
-                'name' => 'convert_currency',
-                'description' => 'Convert an amount from one currency to another',
-                'parameters' => [
-                    'type' => 'object',
-                    'properties' => [
-                        'amount' => [
-                            'type' => 'number',
-                            'description' => 'The amount to convert',
-                        ],
-                        'from_currency' => [
-                            'type' => 'string',
-                            'description' => 'The currency to convert from',
-                        ],
-                        'to_currency' => [
-                            'type' => 'string',
-                            'description' => 'The currency to convert to',
-                        ],
+            'name' => 'get_current_weather',
+            'description' => 'Get the current weather in a given location',
+            'parameters' => [
+                'type' => 'object',
+                'properties' => [
+                    'location' => [
+                        'type' => 'string',
+                        'description' => 'The city and state, e.g. San Francisco, CA',
                     ],
-                    'required' => ['amount', 'from_currency', 'to_currency'],
+                    'unit' => [
+                        'type' => 'string',
+                        'enum' => ['celsius', 'fahrenheit']
+                    ],
                 ],
+                'required' => ['location'],
             ],
-        ],
-    ],
+        ]
+    ]
 ]);
 
-// Process the result and handle the tool call
+$response->id; // 'chatcmpl-6pMyfj1HF4QXnfvjtfzvufZSQq6Eq'
+$response->object; // 'chat.completion'
+$response->created; // 1677701073
+$response->model; // 'gpt-3.5-turbo-0613'
 
-
-$response = $result;
-// Process the result and handle the tool call
 foreach ($response->choices as $result) {
-   echo $result->index; // 0
-   echo $result->message->role; // 'assistant'
-   echo $result->message->content; // null
-   echo $result->message->toolCalls[0]->id; // 'call_123'
-   echo $result->message->toolCalls[0]->type; // 'function'
-   echo $result->message->toolCalls[0]->function->name; // 'get_current_weather'
-   echo $result->message->toolCalls[0]->function->arguments; // "{\n  \"location\": \"Boston, MA\"\n}"
-   echo $result->finishReason; // 'tool_calls'
-   echo "<hr />";
+    $result->index; // 0
+    $result->message->role; // 'assistant'
+    $result->message->content; // null
+    $result->message->functionCall->name; // 'get_current_weather'
+    $result->message->functionCall->arguments; // "{\n  \"location\": \"Boston, MA\"\n}"
+    $result->finishReason; // 'function_call'
 }
 
 $response->usage->promptTokens; // 82,
